@@ -73,21 +73,33 @@ def edit_file(command = None):
             second_command = input("")
             if 'pwd' in second_command:
                 new_password = input("input new password:  ")
+                if new_password == 'admin':
+                    administrator_mode = True
+                    start()
                 profile.password = new_password
                 profile.save_profile(current_file)
                 print("password updated")
             if 'bio' in second_command:
                 new_bio = input("input new bio: ")
+                if new_bio == 'admin':
+                    administrator_mode = True
+                    start()
                 profile.bio = new_bio
                 profile.save_profile(current_file)
                 print("updated bio")
             if 'usr' in second_command:
                 new_usr = input("input new username: ")
+                if new_usr == 'admin':
+                    administrator_mode = True
+                    start()
                 profile.username = new_usr
                 profile.save_profile(current_file)
                 print("username updated")
             if 'addpost' in second_command:
                 post = input("input post: ")
+                if post == 'admin':
+                    administrator_mode = True
+                    start()
                 post = Profile.Post(post, timestamp=timestamp)
                 profile.add_post(post)
                 profile.save_profile(current_file)
@@ -100,32 +112,62 @@ def edit_file(command = None):
 
 
 def read_file(command = None):
-    file_path = command[1]
-    if Path(file_path).exists():
-        with open(file_path, 'r')as file:
-            lines = file.readlines()
-            if lines:
-                for line in lines:
-                    print(line)
-            else:
-                print("EMPTY")
-                start()
+    if administrator_mode:
+        file_path = command[1]
+        if Path(file_path).exists():
+            with open(file_path, 'r')as file:
+                lines = file.readlines()
+                if lines:
+                    for line in lines:
+                        print(line)
+                else:
+                    print("EMPTY")
+                    start()
+        else:
+            print("ERROR")
     else:
-        print("ERROR")
+        path  = input("input file path:")
+        if path == 'admin':
+            administrator_mode = True
+            start()
+        if Path(path).exists():
+            with open(path, 'r')as file:
+                lines = file.readlines()
+                if lines:
+                    for line in lines:
+                        print(line)
+                else:
+                    print("EMPTY")
+                    start()
+        else:
+            print("ERROR")
+
     start()
 
 
 def delet_file(command):
-    file_path = command[1]
-    if Path(file_path).exists():
-        Path(file_path).unlink()
-        print(f"{file_path} DELETED")
+    if administrator_mode:
+        file_path = command[1]
+        if Path(file_path).exists():
+            Path(file_path).unlink()
+            print(f"{file_path} DELETED")
+        else:
+            print("ERROR")
     else:
-        print("ERROR")
+        path = input("input file path: ")
+        if path == 'admin':
+            administrator_mode = True
+            start()
+        if Path(path).exists():
+            Path(path).unlink()
+            print(f"{path} DELETED")
+        else:
+            print("ERROR")
     start()
 
 
 def start():
+    global administrator_mode
     if administrator_mode:
         command = input("Please Enter Command: ")
         command_list = command.split(' ')
@@ -147,6 +189,9 @@ def start():
             start()
     else:
         command = input("Please Enter Command: ")
+        if command == 'admin':
+            administrator_mode = True
+            start()
         if command == 'C':
             create_file()
         if command == 'O':
@@ -157,6 +202,8 @@ def start():
             delet_file()
         if command == 'E':
             edit_file()
+        if command == 'P':
+            print_data()
 
 
 def create_file(command = None):
@@ -173,7 +220,13 @@ def create_file(command = None):
         start()
     else:
         directory = input("input directory path: ")
+        if directory == 'admin':
+            administrator_mode = True
+            start()
         name = input("input file name: ")
+        if name == 'admin':
+            administrator_mode = True
+            start()
         file_path = f"{directory}\\{name}.dsu"
         if Path(file_path).exists():
             print("file already exists")
@@ -181,14 +234,23 @@ def create_file(command = None):
             Path(file_path).touch()
             print(f"file: {name}.dsu created at {file_path}")
         use = input("Enter username: ") 
+        if use == 'admin':
+            administrator_mode = True
+            start()
         password = input("Enter password: ")
+        if password == 'admin':
+            administrator_mode = True
+            start()
         bio = input("Enter bio: ")
+        if bio == 'admin':
+            administrator_mode = True
+            start()
         profile = Profile.Profile(username=use, password=password)
         profile.save_profile(path = file_path)
         start() 
 
 
-def print_data(command):
+def print_data(command = None):
     global current_file
     if administrator_mode:
         file = command[1]
@@ -228,11 +290,37 @@ def print_data(command):
             pwd - print password
             bio - print bio
             usr - print username
+            post - print posts
             all - print all 
             """)
+            comm = input("input command: ")
+            if comm == 'admin':
+                administrator_mode = True
+                start()
+            if 'pwd' in comm:
+                print("Password:", profile.password)
+            if 'usr' in comm:
+                print("Username:", profile.username)
+            if profile.bio:
+                if 'bio' in command:
+                    print("Username:", profile.bio)
+            if 'post' in comm:
+                print("posts:")
+                for i, post in enumerate(profile._posts):
+                    print(f"  Post {i}: {post}")
+            if 'all' in comm:
+                print("Username:", profile.username)
+                print("Password:", profile.password)
+                print("Bio:", profile.bio)
+                print("Posts:")
+                for i, post in enumerate(profile._posts):
+                    print(f"  Post {i}: {post}")
+        
+            
         else:
             print("please open a file first")
             start()
+    start()
 
 
 
@@ -245,6 +333,9 @@ def open_file(command = None):
       
     else:
         path = input("enter file path: ")
+        if path == 'admin':
+            administrator_mode = True
+            start()
         open_file = open(path, 'a')
         print(f"file opened: {path}")
         current_file = path
