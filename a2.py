@@ -62,7 +62,6 @@ def edit_file(command = None):
     else:
         if current_file is not None:
             profile = Profile.Profile()
-            print(current_file)
             profile.load_profile(path = current_file)
             print("""
             edit commands:
@@ -138,9 +137,11 @@ def start():
         elif type == 'D':
             delet_file(command_list)
         elif type == 'O':
-            open_file(command)
+            open_file(command_list)
         elif type == 'E':
             edit_file(command_list)
+        elif type == 'P':
+            print_data(command_list)
         else:
             print("Please Enter Correct Command")
             start()
@@ -156,7 +157,6 @@ def start():
             delet_file()
         if command == 'E':
             edit_file()
-
 
 
 def create_file(command = None):
@@ -186,7 +186,55 @@ def create_file(command = None):
         profile = Profile.Profile(username=use, password=password)
         profile.save_profile(path = file_path)
         start() 
-    
+
+
+def print_data(command):
+    global current_file
+    if administrator_mode:
+        file = command[1]
+        profile = Profile.Profile()
+        profile.load_profile(file)
+        print(command)
+        if '-usr' in command:
+            print("Username:", profile.username)
+        if '-pwd' in command:
+            print("Password:", profile.password)
+        if '-bio' in command:
+            print("Bio:", profile.bio)
+        if '-posts' in command:
+            for i, post in enumerate(profile._posts):
+                print(f"Post {i}: {post}")
+        if '-post' in command:
+            post_index = command.index('-post')
+            post_id = int(command[post_index + 1])
+            if 0 <= post_id < len(profile._posts):
+                print(f"Post {post_id}: {profile._posts[post_id]}")
+            else:
+                print("Invalid post ID")
+        if '-all' in command:
+            print("Username:", profile.username)
+            print("Password:", profile.password)
+            print("Bio:", profile.bio)
+            print("Posts:")
+            for i, post in enumerate(profile._posts):
+                print(f"  Post {i}: {post}")
+        start() 
+    else:
+        if current_file is not None:
+            profile = Profile.Profile()
+            profile.load_profile(path = current_file)
+            print("""
+            print commands:
+            pwd - print password
+            bio - print bio
+            usr - print username
+            all - print all 
+            """)
+        else:
+            print("please open a file first")
+            start()
+
+
 
 def open_file(command = None):
     global current_file
@@ -203,8 +251,6 @@ def open_file(command = None):
 
     start()
 
-    
-
 
 if __name__ == "__main__":
     mode()
@@ -217,5 +263,6 @@ if __name__ == "__main__":
         D - delete file
         O - open file
         E - edit a file
+        P - print contents of file
         """)
     start()
