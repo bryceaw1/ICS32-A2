@@ -9,7 +9,7 @@
 # STUDENT ID
 
 from pathlib import Path
-from profile import Profile
+import Profile
 administrator_mode = False
 
 
@@ -23,8 +23,42 @@ def mode():
     return administrator_mode
 
 
+def edit_file(command = None):
+    if administrator_mode:
+        path = command[1]
+        profile = Profile.Profile()
+        profile.load_profile(path = path)
+        if '-bio' in command:
+            bio_index = command.index('-bio')
+        bio = command[bio_index+1]
+        if '-usr' in command:
+            index = command.index('-usr')
+            new = " ".join(command[index + 1]).strip('"')
+            profile.username = new
+            profile.save_profile(path)
+            print("username updated")
+        if '-pwd' in command:
+            index = command.index('-pwd')
+            new = command[index + 1]
+            profile.password = new.strip('"')
+            profile.save_profile(path)
+            print("password updated")
+        if '-bio' in command:
+            profile.bio = bio.strip('"')
+            profile.save_profile(path)
+            print("bio updated")
+        if '-addpost' in command:
+            index = command.index('-addpost')
+            post = " ".join(command[index + 1])
+            new_post = Profile.Post(post)
+            profile.add_post(post)
+            profile.save_profile(path)
+            print('post added')
+        start()
 
-def read_file(command):
+
+
+def read_file(command = None):
     file_path = command[1]
     if Path(file_path).exists():
         with open(file_path, 'r')as file:
@@ -61,6 +95,10 @@ def start():
             read_file(command_list)
         elif type == 'D':
             delet_file(command_list)
+        elif type == 'O':
+            pass
+        elif type == 'E':
+            edit_file(command_list)
         else:
             print("Please Enter Correct Command")
             start()
@@ -85,19 +123,26 @@ def create_file(command = None):
     else:
         directory = input("input directory path: ")
         name = input("input file name: ")
-        file_path = f"{directory}\\{name}"
+        file_path = f"{directory}\\{name}.dsu"
         if Path(file_path).exists():
             print("file already exists")
         else:
             Path(file_path).touch()
             print(f"file: {name}.dsu created at {file_path}")
-        username = input("Enter username: ") 
+        use = input("Enter username: ") 
         password = input("Enter password: ")
         bio = input("Enter bio: ")
-        profile = Profile(username = username, password = password, bio = bio)
+        profile = Profile.Profile(username=use, password=password)
         profile.save_profile(path = file_path)
         start() 
     
+
+def open_file(command = None):
+    path = command[1]
+    profile = Profile.Pr
+
+    
+
 
 if __name__ == "__main__":
     mode()
@@ -107,5 +152,7 @@ if __name__ == "__main__":
         C - create file
         R - read file
         D - delete file
+        O - open file
+        E - edit a file
         """)
     start()
