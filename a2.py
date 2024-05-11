@@ -11,7 +11,7 @@
 from pathlib import Path
 import Profile
 administrator_mode = False
-
+current_file = None
 
 def mode():
     global administrator_mode
@@ -30,7 +30,9 @@ def edit_file(command = None):
         profile.load_profile(path = path)
         if '-bio' in command:
             bio_index = command.index('-bio')
-        bio = command[bio_index+1]
+            bio = command[bio_index+1]
+        else:
+            bio_index = 0
         if '-usr' in command:
             index = command.index('-usr')
             new = " ".join(command[index + 1]).strip('"')
@@ -96,7 +98,7 @@ def start():
         elif type == 'D':
             delet_file(command_list)
         elif type == 'O':
-            pass
+            open_file(command)
         elif type == 'E':
             edit_file(command_list)
         else:
@@ -138,8 +140,16 @@ def create_file(command = None):
     
 
 def open_file(command = None):
-    path = command[1]
-    profile = Profile.Pr
+    global current_file
+    if administrator_mode:
+        path = command[1]
+        open_file = open(path, 'a')
+        return open_file        
+    else:
+        path = input("enter file path: ")
+        open_file = open(path, 'a')
+        print(f"file opened: {path}")
+        return open_file
 
     
 
