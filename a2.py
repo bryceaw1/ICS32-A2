@@ -26,8 +26,10 @@ def mode():
 
 
 def edit_file(command = None):
+    global administrator_mode
     if administrator_mode:
         path = command[1]
+        print(path)
         profile = Profile.Profile()
         profile.load_profile(path = path)
         if '-bio' in command:
@@ -112,6 +114,7 @@ def edit_file(command = None):
 
 
 def read_file(command = None):
+    global administrator_mode
     if administrator_mode:
         file_path = command[1]
         if Path(file_path).exists():
@@ -146,6 +149,7 @@ def read_file(command = None):
 
 
 def delet_file(command):
+    global administrator_mode
     if administrator_mode:
         file_path = command[1]
         if Path(file_path).exists():
@@ -207,6 +211,7 @@ def start():
 
 
 def create_file(command = None):
+    global administrator_mode
     if administrator_mode:
         dir_path = command[1]
         command_extention = command[2]
@@ -251,6 +256,7 @@ def create_file(command = None):
 
 
 def print_data(command = None):
+    global administrator_mode
     global current_file
     if administrator_mode:
         file = command[1]
@@ -325,10 +331,10 @@ def print_data(command = None):
 
 
 def open_file(command = None):
+    global administrator_mode
     global current_file
     if administrator_mode:
         path = command[1]
-        open_file = open(path, 'a')
         current_file = path
       
     else:
@@ -336,7 +342,6 @@ def open_file(command = None):
         if path == 'admin':
             administrator_mode = True
             start()
-        open_file = open(path, 'a')
         print(f"file opened: {path}")
         current_file = path
 
@@ -345,7 +350,6 @@ def open_file(command = None):
 
 if __name__ == "__main__":
     mode()
-    print(administrator_mode)
     if not administrator_mode:
          print("""
         List of Commands:
