@@ -173,6 +173,7 @@ def delet_file(command):
 def start():
     global administrator_mode
     if administrator_mode:
+        print("administrator mode")
         command = input("Please Enter Command: ")
         command_list = command.split(' ')
         type = command_list[0]
@@ -222,6 +223,12 @@ def create_file(command = None):
         else:
             Path(file_path).touch()
             print(f'{file_path}')
+        use = input("username: ")
+        password = input('password: ')
+        bio = input('input bio: ')
+        profile = Profile.Profile(username=use, password=password)
+        profile.bio = bio
+        profile.save_profile(path = file_path)
         start()
     else:
         directory = input("input directory path: ")
