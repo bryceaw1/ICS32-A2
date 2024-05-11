@@ -10,8 +10,10 @@
 
 from pathlib import Path
 import Profile
+import time
 administrator_mode = False
 current_file = None
+timestamp = time.time()
 
 def mode():
     global administrator_mode
@@ -52,10 +54,48 @@ def edit_file(command = None):
         if '-addpost' in command:
             index = command.index('-addpost')
             post = " ".join(command[index + 1])
-            new_post = Profile.Post(post)
-            profile.add_post(post)
+            new_post = Profile.Post(post, timestamp=timestamp)
+            profile.add_post(new_post)
             profile.save_profile(path)
             print('post added')
+        start()
+    else:
+        if current_file is not None:
+            profile = Profile.Profile()
+            print(current_file)
+            profile.load_profile(path = current_file)
+            print("""
+            edit commands:
+            pwd - update password
+            bio - update bio
+            usr - update username
+            addpost - add a post 
+            """)
+            second_command = input("")
+            if 'pwd' in second_command:
+                new_password = input("input new password:  ")
+                profile.password = new_password
+                profile.save_profile(current_file)
+                print("password updated")
+            if 'bio' in second_command:
+                new_bio = input("input new bio: ")
+                profile.bio = new_bio
+                profile.save_profile(current_file)
+                print("updated bio")
+            if 'usr' in second_command:
+                new_usr = input("input new username: ")
+                profile.username = new_usr
+                profile.save_profile(current_file)
+                print("username updated")
+            if 'addpost' in second_command:
+                post = input("input post: ")
+                post = Profile.Post(post, timestamp=timestamp)
+                profile.add_post(post)
+                profile.save_profile(current_file)
+                print("added post")
+        else:
+            print("please open a file first")
+            start()
         start()
 
 
@@ -106,8 +146,17 @@ def start():
             start()
     else:
         command = input("Please Enter Command: ")
-        if command == 'c' or 'C':
+        if command == 'C':
             create_file()
+        if command == 'O':
+            open_file()
+        if command == 'R':
+            read_file()
+        if command == 'D':
+            delet_file()
+        if command == 'E':
+            edit_file()
+
 
 
 def create_file(command = None):
@@ -144,18 +193,22 @@ def open_file(command = None):
     if administrator_mode:
         path = command[1]
         open_file = open(path, 'a')
-        return open_file        
+        current_file = path
+      
     else:
         path = input("enter file path: ")
         open_file = open(path, 'a')
         print(f"file opened: {path}")
-        return open_file
+        current_file = path
+
+    start()
 
     
 
 
 if __name__ == "__main__":
     mode()
+    print(administrator_mode)
     if not administrator_mode:
          print("""
         List of Commands:
